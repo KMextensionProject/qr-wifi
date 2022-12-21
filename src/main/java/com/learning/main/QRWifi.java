@@ -6,6 +6,7 @@ import java.util.logging.Logger;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -21,7 +22,7 @@ public class QRWifi {
 		validateInputArgs(args);		
 		try {
 			BufferedImage qrWifi = generateWifiQRCode(args[0], args[1]);
-			displayInWindow(qrWifi);
+			SwingUtilities.invokeLater(() -> displayInWindow(qrWifi));
 		} catch (WriterException wex) {
 			LOGGER.severe(() -> wex.getMessage());
 		}
