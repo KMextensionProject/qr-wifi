@@ -1,15 +1,14 @@
 package com.learning.core;
 
-import java.awt.Graphics;
+import static com.learning.core.QRWifi.displayQRImage;
+import static com.learning.core.QRWifi.generateWifiQRCode;
+import static com.learning.core.QRWifi.saveQRImage;
+
 import java.awt.image.BufferedImage;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
-
-import javax.imageio.ImageIO;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -25,27 +24,26 @@ public class AppRunner {
 
 	private static final BufferedWriter WRITER = new BufferedWriter(new OutputStreamWriter(System.out));
 
-	public static void main(String[] args) {
-		validateCommandLineArguments(args);
+	public static void main(String[] args) throws IOException, WriterException {
+		// required not flagged arguments
+		validateWifiArguments(args);
+		// not required flagged arguments
 		CommandLine cmd = parseCommandLineArguments(args);
-		try {
-			BufferedImage image = QRWifi.generateWifiQRCode(args[0], args[1]);
-			String optionValue = cmd.getOptionValue("file", "display");
 
-			switch (optionValue) {
-			case "display":
-				displayImage(image);
-				break;
-			default:
-				saveImage(image, new File(optionValue));
-				println("Image has been saved to: " + optionValue);
+		BufferedImage image = generateWifiQRCode(args[0], args[1]);
+		if (cmd.hasOption("file")) {
+			File file = new File(cmd.getOptionValue("file"));
+			if (file.isDirectory()) {
+				file = new File(file, "WiFi_QR.jpg");
 			}
-		} catch (WriterException | IOException e) {
-			println(e.getMessage());
+			saveQRImage(image, file);
+			println("Image has been saved to: " + file.getAbsolutePath());
+		} else {
+			displayQRImage(image);
 		}
 	}
 
-	private static void validateCommandLineArguments(String[] args) {
+	private static void validateWifiArguments(String[] args) {
 		if (args.length < 2) {
 			println("SSID/Name and password arguments are mandatory");
 			System.exit(1);
@@ -55,7 +53,7 @@ public class AppRunner {
 	private static CommandLine parseCommandLineArguments(String[] args) {
 		Options options = new Options();
 
-		Option input = new Option("f", "file", true, "output file path");
+		Option input = new Option("f", "file", true, "output file or destination");
 		input.setRequired(false);
 		options.addOption(input);
 
@@ -70,26 +68,6 @@ public class AppRunner {
 			System.exit(1);
 		}
 		return cmd;
-	}
-
-	@SuppressWarnings("serial")
-	private static void displayImage(BufferedImage image) {
-		JFrame frame = new JFrame("WiFi connection");
-		frame.setSize(image.getWidth() + 20, image.getHeight() + 60);
-		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frame.setLocationRelativeTo(null);
-		frame.add(new JPanel() {
-			@Override
-			public void paintComponent(Graphics g) {
-				g.drawImage(image, 10, 10, null);
-			}
-		});
-		frame.setVisible(true);
-	}
-
-	private static void saveImage(BufferedImage image, File outputFile) throws IOException {
-		// TODO: validate outputFile suffix and if it is a folder, use default name
-		ImageIO.write(image, "jpg", outputFile);
 	}
 
 	private static void println(CharSequence input) {

@@ -1,7 +1,13 @@
 package com.learning.core;
 
+import java.awt.Graphics;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
+
+import javax.imageio.ImageIO;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.WriterException;
@@ -26,5 +32,25 @@ public class QRWifi {
 		wifiDesc.append(wifiPassword);
 		wifiDesc.append(";;");
 		return wifiDesc.toString();
+	}
+
+	@SuppressWarnings("serial")
+	public static void displayQRImage(BufferedImage image) {
+		JFrame frame = new JFrame("WiFi connection");
+		frame.setSize(image.getWidth() + 20, image.getHeight() + 60);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		frame.setLocationRelativeTo(null);
+		frame.add(new JPanel() {
+			@Override
+			public void paintComponent(Graphics g) {
+				g.drawImage(image, 10, 10, null);
+			}
+		});
+		frame.setVisible(true);
+	}
+
+	public static void saveQRImage(BufferedImage image, File outputFile) throws IOException {
+		String fileName = outputFile.getName();
+		ImageIO.write(image, fileName.substring(fileName.lastIndexOf('.') + 1), outputFile);
 	}
 }
