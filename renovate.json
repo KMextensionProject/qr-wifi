@@ -1,17 +1,26 @@
 {
-  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": [
-    "config:recommended"
-  ],
-  "prHeader": "TEST_HEADER",
-	"assignees": [
-		"KMExtensionProject"
-	],
-	"labels": ["DEPENDENCIES-TEST_LABEL"],
-	"packageRules": [
-		{
-			"matchPackagePatterns": ["maven"],
-			"labels": ["MAVEN_TEST_LABEL"]
-		}
-	]
+   "$schema":"https://docs.renovatebot.com/renovate-schema.json",
+   "extends":[
+      "config:recommended"
+   ],
+   "schedule":[
+      "before 4am on the first day of the month"
+   ],
+   "prHeader":"TEST_HEADER",
+   "assignees":[
+      "KMExtensionProject"
+   ],
+   "labels":[
+      "DEPENDENCIES-TEST_LABEL"
+   ],
+   "packageRules":[
+      {
+         "matchPackagePatterns":[
+            "maven"
+         ],
+         "labels":[
+            "MAVEN_TEST_LABEL"
+         ]
+      }
+   ]
 }
